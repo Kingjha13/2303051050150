@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-
 public final class EvalConfig {
 
     private final Properties props = new Properties();
@@ -32,6 +31,16 @@ public final class EvalConfig {
         String envPath = System.getenv("EVAL_CONFIG_PATH");
         if (envPath != null && !envPath.isBlank()) {
             return Path.of(envPath);
+        }
+        Path dir = Path.of("").toAbsolutePath();
+        for (int i = 0; i < 5; i++) {
+            Path candidate = dir.resolve("config.properties");
+            if (Files.exists(candidate)) {
+                return candidate;
+            }
+            Path parent = dir.getParent();
+            if (parent == null) break;
+            dir = parent;
         }
         return Path.of("config.properties");
     }
